@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<%- include('../partials/head'); %>
+</head>
+<body>
+	<div>
+		<%- include('../partials/header'); %>
+		<br/>
+		<div class="jumbotron text-center"> 
+			<p>Save your upcoming daily tasks and we will remind you about it</p>
+		</div>
+		<div id='index-container' class="text-center well" >
+			<div id="index-alert" class="" role="alert"></div>
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#login">Login</a></li>
+				<li><a data-toggle="tab" href="#signup">Sign Up</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="login" class="tab-pane fade in active">
+					<h3>Login</h3>
+					<form class="form-horizontal" role="form" onsubmit="return validate('login')">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<div class="input-group">
+									<input id="loginEmail" type="text" class="form-control" name="email" placeholder="Email" required>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input type="password" class="form-control" id="loginPswd" name="loginPswd" placeholder="Password" value="" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input name="submit" type="submit" value="Submit" class="btn btn-primary">
+							</div>
+						</div>
+					</form>
+				</div>
+			  <div id="signup" class="tab-pane fade">
+				<h3>Sign Up</h3>
+				<form class="form-horizontal" role="form" onsubmit="return validate('signup')">
+					<div class="form-group">
+						<div class="col-sm-12">
+							<div class="input-group">
+								<input id="signupEmail" type="text" class="form-control" name="email" placeholder="Email" required>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							<input type="password" class="form-control" id="signupPswd" name="signupPswd" placeholder="Password" value="" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							<input type="password" class="form-control" id="signupRePswd" name="signupRePswd" placeholder="Re-type Password" value="" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							<input name="submit" type="submit" value="Submit" class="btn btn-primary">
+						</div>
+					</div>
+					<div class="alert alert-info">
+						<strong>Info!</strong> Mail server may take time to send you Activation Mail.
+					</div>
+				  </div>
+				</form>
+			  </div>
+			</div>
+		</div>
+		<%- include('../partials/footer'); %>
+	</div>
+</body>
+</html>
+

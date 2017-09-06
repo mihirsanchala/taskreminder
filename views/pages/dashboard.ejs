@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<%- include('../partials/head'); %>
+</head>
+<body>
+	<div>
+		<%- include('../partials/user_header'); %>
+		<br/>
+	<% 	var manageTasks = [];
+		var pendingTasks = [];
+		var completedTasks = [];
+		allTasks.forEach(function(singleTask){
+			var taskDate = new Date(singleTask.date);
+			var dd = taskDate.getDate();
+			var mm = taskDate.getMonth() + 1;
+			var yyyy = taskDate.getFullYear();
+
+			if(dd < 10)
+				dd = '0' + dd;
+			if(mm < 10)
+				mm = '0' + mm;
+			
+			taskFormattedDate = dd + '/' + mm + '/' + yyyy;
+
+			var now = new Date();
+            now.setHours(0,0,0,0);
+            if (singleTask.date > now) 
+				manageTasks.push({_id : singleTask._id, date : taskFormattedDate, details : singleTask.details});
+			else if(singleTask.completed === false)
+				pendingTasks.push({_id : singleTask._id, date : taskFormattedDate, details : singleTask.details});
+			else if(singleTask.completed === true)
+				completedTasks.push({_id : singleTask._id, date : taskFormattedDate, details : singleTask.details});
+		});	%>
+		<div id='dashboard-container' class="text-center well">
+			<div id="dashboard-alert" class="" role="alert"></div>
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#create">Create New</a></li>
+				<li><a data-toggle="tab" href="#manage">Upcoming</a></li>
+				<li><a data-toggle="tab" href="#pending">Pending</a></li>
+				<li><a data-toggle="tab" href="#completed">Completed</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="create" class="tab-pane fade in active">
+					<h3>Create New</h3>
+					<form class="form-horizontal" role="form" onsubmit="return taskAction('create', '')" >
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input type="text" class="form-control" id="createDate" placeholder="Date" value="" autocomplete="off" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<textarea rows="5" class="form-control" id="createDetails" placeholder="Details" maxlength='200' required></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input name="submit" type="submit" value="Create" class="btn btn-primary">
+							</div>
+						</div>
+					</form>
+				</div>
+			  	<div id="manage" class="tab-pane fade">
+					<h3>Upcoming</h3>
+					<table id='manageTasks' class="table">
+						<tr class='info'>
+							<th class='text-center width-100' >Date</th>
+							<th class='text-center' >Details</th>
+							<th class='text-center width-100' >Actions</th>
+						</tr>
+						<% manageTasks.forEach(function(singleTask){ %>
+							<tr id='<%- singleTask._id %>'>
+								<td><%- singleTask.date %></td>
+								<td><%- singleTask.details %></td>
+								<td>
+									<div class="btn-group btn-group-sm" role="group" >
+										<button type="button" class="btn btn-sm btn-default" data-toggle="modal" title='Edit' data-target="#editTask" onClick="taskView('<%- singleTask._id %>')">
+											<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+										</button>
+										<button type="button" class="btn btn-sm btn-default" data-toggle="modal" title='Remove' data-target="#deleteTask" onClick="taskDeleteConfirmation('<%- singleTask._id %>')">
+											<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+										</button>
+									</div>
+								</td>
+							</tr>
+						<% }); %>
+					</table>
+			  	</div>
+				<div id="pending" class="tab-pane fade">
+					<h3>Pending</h3>
+					<table id='pendingTasks' class="table">
+						<tr class='danger'>
+							<th class='text-center width-100' >Date</th>
+							<th class='text-center' >Details</th>
+							<th class='text-center width-100' >Actions</th>
+						</tr>
+						<% pendingTasks.forEach(function(singleTask){ %>
+							<tr id='<%- singleTask._id %>'>
+								<td><%- singleTask.date %></td>
+								<td><%- singleTask.details %></td>
+								<td>
+									<div class="btn-group btn-group-sm" role="group" >
+										<button type="button" class="btn btn-sm btn-default" title='Completed' onClick="taskCompleted('<%- singleTask._id %>')">
+											<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+										</button>
+									</div>
+								</td>
+							</tr>
+						<% }); %>
+					</table>
+			  	</div>
+				<div id="completed" class="tab-pane fade">
+					<h3>Completed</h3>
+					<table id='completedTasks' class="table">
+						<tr class='success'>
+							<th class='text-center width-100' >Date</th>
+							<th class='text-center' >Details</th>
+						</tr>
+						<% completedTasks.forEach(function(singleTask){ %>
+							<tr>
+								<td><%- singleTask.date %></td>
+								<td><%- singleTask.details %></td>
+							</tr>
+						<% }); %>
+					</table>
+			  	</div>
+			</div>
+			<!-- Modal Edit -->
+			<div id="editTask" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<h3>Update Task</h3>
+							<form class="form-horizontal" role="form" onsubmit="return taskAction('edit', '')" >
+								<div id="popup-alert" class="" role="alert"></div>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<input type="text" class="form-control" id="editDate" placeholder="Date" value="" autocomplete="off" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<textarea rows="5" class="form-control" id="editDetails" placeholder="Details" maxlength='200' required></textarea>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary">Update</button>
+									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Modal Delete -->
+			<div id="deleteTask" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<form class="form-horizontal" role="form" onsubmit="return taskAction('delete', '')" >
+								<h4>Are you sure you want to delete ?</h4>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-danger">Yes</button>
+									<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<%- include('../partials/user_footer'); %>
+	</div>
+</body>
+</html>
+
